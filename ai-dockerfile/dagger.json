@@ -1,0 +1,6 @@
+{
+  "name": "ai-dockerfile",
+  "sdk": "go",
+  "source": ".",
+  "engineVersion": "v0.11.0"
+}
