@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"strings"
 )
 
@@ -30,6 +31,14 @@ func (m *AiDockerfile) GetProjectFiles(ctx context.Context, projectDir *Director
 
 }
 
+type Generate struct {
+	Model string `json:"model"`
+
+	Prompt string `json:"prompt"`
+
+	Stream bool `json:"stream"`
+}
+
 func (m *AiDockerfile) WrapContentFiles(ctx context.Context, files []*File) (string, error) {
 
 	content := ""
@@ -55,7 +64,19 @@ func (m *AiDockerfile) WrapContentFiles(ctx context.Context, files []*File) (str
 
 	}
 
-	return content, nil
+	generate, err := json.Marshal(Generate{
+		Model:  "aidockerfile",
+		Prompt: content,
+		Stream: false,
+	})
+
+	if err != nil {
+
+		return "", err
+
+	}
+
+	return string(generate), nil
 
 }
 
