@@ -8,7 +8,7 @@ import (
 
 type Kubernetes struct{}
 
-// dagger call run --docker-sock=/var/run/docker.sock --kind-svc=tcp://127.0.0.1:3000 terminal stdout
+// dagger call run --docker-sock=/var/run/docker.sock --kind-svc=tcp://127.0.0.1:3000 stdout
 func (m *Kubernetes) Run(ctx context.Context, dockerSock *dagger.Socket, kindSvc *dagger.Service) *dagger.Container {
 
 	return dag.Container().
