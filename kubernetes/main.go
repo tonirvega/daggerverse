@@ -8,8 +8,31 @@ import (
 
 type Kubernetes struct{}
 
-// dagger call run --docker-sock=/var/run/docker.sock --kind-svc=tcp://127.0.0.1:3000 stdout
-func (m *Kubernetes) Run(ctx context.Context, dockerSock *dagger.Socket, kindSvc *dagger.Service) *dagger.Container {
+// dagger call run-sock --docker-sock=/var/run/docker.sock --kind-svc=tcp://127.0.0.1:3000 terminal stdout
+func (m *Kubernetes) Run(
+
+	ctx context.Context,
+
+	dockerSock *dagger.Socket,
+
+	kindSvc *dagger.Service,
+
+) *dagger.Container {
+
+	if dockerSock != nil {
+
+		ep, err := kindSvc.Endpoint(ctx, dagger.ServiceEndpointOpts{
+			Scheme: "tcp",
+		})
+
+		if err != nil {
+
+			panic(err)
+
+		}
+
+		panic(ep)
+	}
 
 	return dag.Container().
 		From("alpine").
@@ -28,5 +51,6 @@ func (m *Kubernetes) Run(ctx context.Context, dockerSock *dagger.Socket, kindSvc
 			InsecureRootCapabilities: true,
 		}).
 		WithServiceBinding("localhost", kindSvc).
-		WithExec([]string{"kubectl", "get", "nodes", "--server=https://localhost:3000"})
+		WithExec([]string{"kubectl", "config", "set-cluster", "kind-kind", "--server=https://localhost:3000"}).
+		WithExec([]string{"kubectl", "get", "nodes"})
 }
