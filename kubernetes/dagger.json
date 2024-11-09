@@ -1,5 +1,6 @@
 {
   "name": "kubernetes",
   "engineVersion": "v0.14.0",
-  "sdk": "go"
+  "sdk": "go",
+  "source": "."
 }
