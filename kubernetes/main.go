@@ -7,7 +7,6 @@ import (
 
 type Kubernetes struct{}
 
-// Returns a container that echoes whatever string argument is provided
 func (m *Kubernetes) Run(ctx context.Context) *dagger.Container {
 
 	dindSvc := dag.Container().
@@ -36,14 +35,4 @@ func (m *Kubernetes) Run(ctx context.Context) *dagger.Container {
 		WithExec([]string{"chmod", "+x", "./kind"}).
 		WithExec([]string{"mv", "./kind", "/usr/local/bin/kind"}, dagger.ContainerWithExecOpts{InsecureRootCapabilities: true}).
 		WithExec([]string{"kind", "create", "cluster"}, dagger.ContainerWithExecOpts{InsecureRootCapabilities: true})
-}
-
-// Returns lines that match a pattern in the files of the provided Directory
-func (m *Kubernetes) GrepDir(ctx context.Context, directoryArg *dagger.Directory, pattern string) (string, error) {
-	return dag.Container().
-		From("alpine:latest").
-		WithMountedDirectory("/mnt", directoryArg).
-		WithWorkdir("/mnt").
-		WithExec([]string{"grep", "-R", pattern, "."}).
-		Stdout(ctx)
 }
