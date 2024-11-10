@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	yaml "gopkg.in/yaml.v3"
 )
 
 type Kubernetes struct {
@@ -54,10 +56,20 @@ func New(
 
 	}
 
+	kindConfig := &KindConfig{
+		Kind:       "Cluster",
+		ApiVersion: "kind.x-k8s.io/v1alpha4",
+		Networking: Networking{
+			ApiServerPort: port,
+		},
+	}
+
+	yamlFileContent, err := yaml.Marshal(kindConfig)
+
 	container := dag.Container().
 		From("alpine").
 		WithUnixSocket("/var/run/docker.sock", dockerSocket).
-		WithFile("kind.yaml", dag.CurrentModule().Source().File("kind.yaml")).
+		WithNewFile("kind.yaml", string(yamlFileContent)).
 		WithExec([]string{"apk", "add", "docker", "kubectl", "k9s", "curl"}).
 		WithExec([]string{"curl", "-Lo", "./kind", "https://kind.sigs.k8s.io/dl/v0.25.0/kind-linux-amd64"}).
 		WithExec([]string{"chmod", "+x", "./kind"}).
@@ -93,7 +105,7 @@ func (m *Kubernetes) LoadContainerOnKind(
 
 ) *dagger.Container {
 
-	containerName := fmt.Sprintf("%s.tar", tag)
+	containerFileTaName := fmt.Sprintf("%s.tar", tag)
 
 	tarball := container.
 		// This is the image name that will be loaded in the kind cluster
@@ -112,19 +124,22 @@ func (m *Kubernetes) LoadContainerOnKind(
 		AsTarball()
 
 	return m.Container.
-		WithFile(containerName, tarball).
+		WithFile(containerFileTaName, tarball).
 		WithEnvVariable("BUST", time.Now().String()).
-		WithExec([]string{"kind", "load", "image-archive", fmt.Sprintf("%s.tar", tag)})
+		WithExec([]string{"kind", "load", "image-archive", containerFileTaName}).
+		WithExec([]string{"rm", containerFileTaName})
 
 }
 
-func (m *Kubernetes) K9s(
+func (m *Kubernetes) Knines(
 
 	ctx context.Context,
 
 ) *dagger.Container {
 
-	return m.Container.WithExec([]string{"k9s"}).Terminal()
+	return m.Container.Terminal(dagger.ContainerTerminalOpts{
+		Cmd: []string{"k9s"},
+	})
 
 }
 
@@ -135,15 +150,5 @@ func (m *Kubernetes) Inspect(
 ) *dagger.Container {
 
 	return m.Container.Terminal()
-
-}
-
-func (m *Kubernetes) Run(
-
-	ctx context.Context,
-
-) *dagger.Container {
-
-	return m.LoadContainerOnKind(ctx, dag.Container().From("alpine"), "alpinesito")
 
 }

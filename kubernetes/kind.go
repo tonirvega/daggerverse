@@ -5,7 +5,9 @@ type KindConfig struct {
 
 	ApiVersion string `yaml:"apiVersion"`
 
-	Networking struct {
-		ApiServerPort int `yaml:"apiServerPort"`
-	} `yaml:"networking"`
+	Networking Networking `yaml:"networking"`
+}
+
+type Networking struct {
+	ApiServerPort int `yaml:"apiServerPort"`
 }
