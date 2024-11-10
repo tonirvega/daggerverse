@@ -95,6 +95,8 @@ func New(
 	}
 }
 
+// Loads a container to kind cluster, previously it was saved as a tarball with
+// the annotations required by kind. You can use this function into your module
 func (m *Kubernetes) LoadContainerOnKind(
 
 	ctx context.Context,
@@ -131,6 +133,9 @@ func (m *Kubernetes) LoadContainerOnKind(
 
 }
 
+// Launch k9s terminal
+// Example usage:
+// dagger call --docker-socket=/var/run/docker.sock --kind-svc=tcp://127.0.0.1:3000 knines
 func (m *Kubernetes) Knines(
 
 	ctx context.Context,
@@ -143,6 +148,9 @@ func (m *Kubernetes) Knines(
 
 }
 
+// Inspect returns the container that will be launched
+// Example usage:
+// dagger call --docker-socket=/var/run/docker.sock --kind-svc=tcp://127.0.0.1:3000 inspect
 func (m *Kubernetes) Inspect(
 
 	ctx context.Context,
