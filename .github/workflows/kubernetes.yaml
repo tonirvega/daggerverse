@@ -20,5 +20,5 @@ jobs:
         with:
           workdir: kubernetes
           verb: call
-          args: --docker-socket=/var/run/docker.sock --kind-svc=tcp://127.0.0.1:3000 inspect with-exec --args kubectl --args get --args nodes stdout
+          args: --docker-socket=/var/run/docker.sock --kind-svc=tcp://127.0.0.1:3000 container with-exec --args kubectl --args get --args nodes stdout
           version: "0.14.0"
