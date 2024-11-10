@@ -116,7 +116,7 @@ func (m *Kubernetes) LoadContainerOnKind(
 			fmt.Sprintf("%s:latest", tag),
 		).
 
-		// Kind requires the docker.io/library prefix, otherwise it will load the image
+		// Kind requires the docker.io/library prefix, otherwise it will not be able to find the image on pod pull
 		// This a fake image name in docker.io, it is not a real image.
 		// You should user imagePullPolicy: Never in your Kubernetes manifests.
 		WithAnnotation(
