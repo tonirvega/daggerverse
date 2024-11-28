@@ -1,6 +1,0 @@
-{
-  "name": "yaml",
-  "sdk": "go",
-  "source": ".",
-  "engineVersion": "v0.11.2"
-}
